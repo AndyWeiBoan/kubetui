@@ -1,0 +1,3 @@
+module kubetui
+
+go 1.25.7
