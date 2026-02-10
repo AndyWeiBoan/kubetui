@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"iter"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type KubeConfig struct{
+	ApiVersion string
+	Kind string
 	Contexts []Context
 	CurrentContext string
 }
@@ -36,27 +41,34 @@ type User struct {
 
 func NewKubeConfig() *KubeConfig{
 
-	kubeConfig, err := loadKubeConfig()
-
-	if (err != nil) {
-		panic(err)
+	home, _ := os.UserHomeDir()
+	path := filepath.Join(home, ".kube", "config")
+	for line := range readKubeConfigFile(path) {
+		item := strings.Split(line, ":")
+		fmt.Println(item[0])
 	}
-
 	return &KubeConfig {
-		CurrentContext:  kubeConfig,
+
 	}
 }
 
-func loadKubeConfig() (string,error) {
-	home, _ := os.UserHomeDir()
-	path := filepath.Join(home, ".kube", "config")
-	bytes, err := os.ReadFile(path)
-	if err != nil {
-
-		fmt.Println(err)
-		return "", err
+func readKubeConfigFile(path string) iter.Seq[string] {
+	return func(yield func(string) bool) {
+		file, err := os.Open(path)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if !yield(line) {
+				return
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			panic(err)
+		}
 	}
-	result := string(bytes)
-	return result, nil
 }
 
