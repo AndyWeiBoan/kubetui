@@ -2,15 +2,15 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"iter"
 	"os"
+	"log"
 	"path/filepath"
 	"strings"
 )
 
 type KubeConfig struct{
-	ApiVersion string
+	APIVersion string
 	Kind string
 	Contexts []Context
 	CurrentContext string
@@ -43,13 +43,25 @@ func NewKubeConfig() *KubeConfig{
 
 	home, _ := os.UserHomeDir()
 	path := filepath.Join(home, ".kube", "config")
+	kubeConfig := &KubeConfig{}
 	for line := range readKubeConfigFile(path) {
-		item := strings.Split(line, ":")
-		fmt.Println(item[0])
+		if strings.Contains(line, "apiVersion:") {
+			kubeConfig.SetAPIVersion(line)
+		}
 	}
-	return &KubeConfig {
+	return kubeConfig
+}
 
+func (kubeconfig * KubeConfig) SetAPIVersion(text string) *KubeConfig {
+
+	_, value, found := strings.Cut(text, ":")
+
+	if (!found) {
+		log.Panicf("Invalid KubeConfig format: %s", text)
 	}
+	kubeconfig.APIVersion = strings.Trim(value, "")
+	log.Printf("set apiVerion: %s", kubeconfig.APIVersion)
+	return kubeconfig
 }
 
 func readKubeConfigFile(path string) iter.Seq[string] {
