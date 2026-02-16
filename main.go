@@ -1,7 +1,7 @@
 package main
 
 import (
-	_"fmt"
+	_ "fmt"
 	"log"
 )
 
@@ -10,7 +10,4 @@ func main() {
 
 	log.Printf("apiversion: %v", kubeConfig.APIVersion)
 	log.Printf("current-context: %v", kubeConfig.CurrentContext)
-
 }
-
-

@@ -21,7 +21,7 @@ type Option func(*KubeConfig)
 
 type ContextRaw struct {
 	Cluster string
-	User string
+	User    string
 }
 
 type Context struct {
@@ -32,24 +32,24 @@ type Context struct {
 type Cluster struct {
 	CertificateAuthorityData string
 
-	Server                   string
-	Name                     string
+	Server string
+	Name   string
 }
 
 type User struct {
 	ClientKeyData         string
 	ClientCertificateData string
-	Token string
-	Name string
+	Token                 string
+	Name                  string
 }
 
 func NewKubeConfig() *KubeConfig {
 	home, _ := os.UserHomeDir()
 	path := filepath.Join(home, ".kube", "config")
 	kubeConfig := &KubeConfig{
-		Contexts: make([]Context, 0),
+		Contexts:   make([]Context, 0),
 		APIVersion: "",
-		Kind: "",
+		Kind:       "",
 	}
 	content := loadKubeConfig(path)
 	lines := strings.Split(content, "\n")
@@ -85,9 +85,9 @@ func NewKubeConfig() *KubeConfig {
 		cluster, clusterExists := clusters[contextRaw.Cluster]
 		user, userExists := users[contextRaw.User]
 		if clusterExists && userExists {
-			kubeConfig.Contexts = append(kubeConfig.Contexts, Context {
+			kubeConfig.Contexts = append(kubeConfig.Contexts, Context{
 				Cluster: *cluster,
-				User: *user,
+				User:    *user,
 			})
 		} else {
 			if !clusterExists {
@@ -99,8 +99,6 @@ func NewKubeConfig() *KubeConfig {
 			}
 		}
 	}
-
-
 
 	return kubeConfig
 }
@@ -136,7 +134,7 @@ func ParsseClusters(lines []string) (map[string]*Cluster, error) {
 	var current *Cluster
 	for index, line := range lines {
 		if strings.Contains(line, "clusters:") {
-			if index == len(lines) -1 {
+			if index == len(lines)-1 {
 				log.Printf("invalid kubeconfig format, clusters should not be last line")
 				break
 			}
@@ -147,7 +145,7 @@ func ParsseClusters(lines []string) (map[string]*Cluster, error) {
 				for i := index + 1; i < len(lines); i++ {
 					key, value, found := strings.Cut(lines[i], ":")
 					hasIndent := strings.HasPrefix(key, " ")
-					hasArrayToken := strings.HasPrefix(key, "-")
+					hasArrayToken := strings.Contains(key, "-")
 					if !hasIndent && !hasArrayToken {
 						break
 					}
@@ -177,7 +175,7 @@ func ParseUsers(lines []string) (map[string]*User, error) {
 	var current *User
 	for index, line := range lines {
 		if strings.Contains(line, "users:") {
-			if index == len(lines) -1 {
+			if index == len(lines)-1 {
 				log.Printf("invalid kubeconfig format, users should not be last line")
 				break
 			}
@@ -188,7 +186,7 @@ func ParseUsers(lines []string) (map[string]*User, error) {
 				for i := index + 1; i < len(lines); i++ {
 					key, value, found := strings.Cut(lines[i], ":")
 					hasIndent := strings.HasPrefix(key, " ")
-					hasArrayToken := strings.HasPrefix(key, "-")
+					hasArrayToken := strings.Contains(key, "-")
 					if !hasIndent && !hasArrayToken {
 						break
 					}
@@ -220,7 +218,7 @@ func ParseContextRaws(lines []string) ([]*ContextRaw, error) {
 	var current *ContextRaw
 	for index, line := range lines {
 		if strings.Contains(line, "contexts:") {
-			if index == len(lines) -1 {
+			if index == len(lines)-1 {
 				log.Printf("invalid kubeconfig format, users should not be last line")
 				break
 			}
@@ -231,7 +229,7 @@ func ParseContextRaws(lines []string) ([]*ContextRaw, error) {
 				for i := index + 1; i < len(lines); i++ {
 					key, value, found := strings.Cut(lines[i], ":")
 					hasIndent := strings.HasPrefix(key, " ")
-					hasArrayToken := strings.HasPrefix(key, "-")
+					hasArrayToken := strings.Contains(key, "-")
 					if !hasIndent && !hasArrayToken {
 						break
 					}
@@ -255,7 +253,6 @@ func ParseContextRaws(lines []string) ([]*ContextRaw, error) {
 }
 
 func (kubeconfig *KubeConfig) SetAPIVersion(text string) *KubeConfig {
-
 	_, value, found := strings.Cut(text, ":")
 
 	if !found {
@@ -268,7 +265,6 @@ func (kubeconfig *KubeConfig) SetAPIVersion(text string) *KubeConfig {
 
 func loadKubeConfig(path string) string {
 	bytes, err := os.ReadFile(path)
-
 	if err != nil {
 		panic(err)
 	}
