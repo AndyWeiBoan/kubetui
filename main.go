@@ -1,13 +1,16 @@
 package main
 
 import (
-	"fmt"
+	_"fmt"
+	"log"
 )
 
 func main() {
-	test := NewKubeConfig()
+	kubeConfig := NewKubeConfig()
 
-	fmt.Println(test.CurrentContext)
+	log.Printf("apiversion: %v", kubeConfig.APIVersion)
+	log.Printf("current-context: %v", kubeConfig.CurrentContext)
+
 }
 
 
