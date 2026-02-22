@@ -8,9 +8,6 @@ package main
 
 import (
 	"fmt"
-	"time"
-
-	"kubetui/tty"
 )
 
 func main2() {
@@ -18,14 +15,37 @@ func main2() {
 }
 
 func main() {
-	tty.SetUp()
-
-	defer tty.Close()
-
-	for {
-		// tty.Write("123")
-		time.Sleep(1 * time.Second)
-	}
+	// ttyHandler, err := tty.NewTTY()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// ttyHandler.Setup()
+	//
+	// defer ttyHandler.Close()
+	//
+	// for data := range ttyHandler.Read() {
+	// 	var c [][]tty.Cell
+	// 	screen := copy(c, ttyHandler.Screen.Cells)
+	// 	_ = screen
+	// 	runes := []rune(string(data)) // bytes → runes
+	//
+	// 	// 建一行 cells
+	// 	row := make([]tty.Cell, len(runes))
+	// 	for i, r := range runes {
+	// 		row[i] = tty.Cell{
+	// 			Char:    r,
+	// 			Changed: true,
+	// 		}
+	// 	}
+	//
+	// 	cells := [][]tty.Cell{row} // 包成二維
+	//
+	// 	ttyHandler.Screen.ScreenChangeChan <- cells
+	// }
+	// for {
+	// 	// tty.Write("123")
+	// 	time.Sleep(1 * time.Second)
+	// }
 	// kubeConfig := NewKubeConfig()
 	//
 	// log.Printf("apiversion: %v", kubeConfig.APIVersion)

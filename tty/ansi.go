@@ -14,8 +14,20 @@ type ScreenCommand struct {
 }
 
 type AnsiCommand struct {
-	ERASE  EraseCommand
-	Screen ScreenCommand
+	ERASE    EraseCommand
+	Screen   ScreenCommand
+	Mouse    MouseEventCommand
+	Keyboard KeyboardEventCommand
+}
+
+type MouseEventCommand struct {
+	EnableMouseEvent  string
+	DisableMouseEvent string
+}
+
+type KeyboardEventCommand struct {
+	EnableKeyboardEvent  string
+	DisableKeyboardEvent string
 }
 
 var erase = EraseCommand{
@@ -27,9 +39,21 @@ var screen = ScreenCommand{
 	DisableAlternativeBuffer: concatCommands(esc, "[?1049l"),
 }
 
+var mouse = MouseEventCommand{
+	EnableMouseEvent:  concatCommands(esc, "[?1004h"),
+	DisableMouseEvent: concatCommands(esc, "[?1004l"),
+}
+
+var keyboard = KeyboardEventCommand{
+	EnableKeyboardEvent:  concatCommands(esc, "[?1002h"), //, esc, "[?1006h"),
+	DisableKeyboardEvent: concatCommands(esc, "[?1002l"), // esc, "[?1006l"),
+}
+
 var ANSI = &AnsiCommand{
-	ERASE:  erase,
-	Screen: screen,
+	ERASE:    erase,
+	Screen:   screen,
+	Mouse:    mouse,
+	Keyboard: keyboard,
 }
 
 func concatCommands(commands ...string) string {
