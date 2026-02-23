@@ -8,6 +8,7 @@ package main
 
 import (
 	"fmt"
+	"kubetui/app"
 )
 
 func main2() {
@@ -15,6 +16,7 @@ func main2() {
 }
 
 func main() {
+	app.Start()
 	// ttyHandler, err := tty.NewTTY()
 	// if err != nil {
 	// 	panic(err)

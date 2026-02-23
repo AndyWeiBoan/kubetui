@@ -3,6 +3,7 @@ package tty
 import (
 	"bufio"
 	"iter"
+	"log"
 	"os"
 	"strconv"
 	"syscall"
@@ -41,17 +42,29 @@ func NewTTY() *TTY {
 	tty.Exec(
 		ANSI.Screen.EnableAlternativeBuffer,
 		ANSI.Keyboard.EnableKeyboardEvent,
+		ANSI.ERASE.EntireScreen,
 	)
 	return tty
 }
 
 func (t *TTY) Close() {
 	t.restoreOriginMode()
-	t.Exec(ANSI.Screen.DisableAlternativeBuffer)
-	t.file.Close()
+	t.Exec(
+		ANSI.ERASE.EntireScreen,
+		ANSI.Keyboard.DisableKeyboardEvent,
+		ANSI.Screen.DisableAlternativeBuffer)
+
+	if err := t.bufWriter.Flush(); err != nil {
+		log.Printf("error while flush before tty close: %v", err)
+	}
+
+	if err := t.file.Close(); err != nil {
+		log.Printf("error while tty file close: %v", err)
+	}
 }
 
 func (t *TTY) Draw(screen Screen) {
+	//t.Exec(ANSI.ERASE.EntireScreen)
 	var cmd string
 	for i := 1; i < len(screen.Cells); i++ {
 		for j := 1; j < len(screen.Cells[i]); j++ {
@@ -63,7 +76,8 @@ func (t *TTY) Draw(screen Screen) {
 			cmd = concatCommands(cmd, runeCmd)
 		}
 	}
-	t.Exec(cmd)
+	t.Exec(ANSI.ERASE.EntireScreen, cmd)
+	//log.Printf("cmd: %q", cmd)
 }
 
 // func (t *TTY) drawPanel(ws *Winsize) {

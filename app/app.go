@@ -26,7 +26,9 @@ func init() {
 	winSize = getWinSize()
 	ttyHandler = tty.NewTTY()
 	rootView = &view.Root{Name: "root", X: 1, Y: 1, H: 100, W: 100}
-
+	screen := rootView.GetScreen(winSize)
+	_ = screen
+	ttyHandler.Draw(screen)
 	go onWindowsResize()
 	go onShutdown()
 }
@@ -47,6 +49,8 @@ func onWindowsResize() {
 	for {
 		<-windowResizeChan
 		winSize = getWinSize()
+		screen := rootView.GetScreen(winSize)
+		ttyHandler.Draw(screen)
 	}
 }
 
